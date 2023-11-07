@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5CC7A807-1067-4048-8391-5114AD0577A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotNet.Cli", "src\cli\SpotNet.Cli.csproj", "{4DE39D46-A226-4C12-BAEE-13310E112181}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotNet.Web", "src\web\SpotNet.Web.csproj", "{57B95425-BC08-4E6E-B6A4-457CE71B4F44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotNet.Common", "src\common\SpotNet.Common.csproj", "{F2397E04-8909-488D-9A8D-0594FEBBFD74}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4DE39D46-A226-4C12-BAEE-13310E112181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DE39D46-A226-4C12-BAEE-13310E112181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DE39D46-A226-4C12-BAEE-13310E112181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DE39D46-A226-4C12-BAEE-13310E112181}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57B95425-BC08-4E6E-B6A4-457CE71B4F44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57B95425-BC08-4E6E-B6A4-457CE71B4F44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57B95425-BC08-4E6E-B6A4-457CE71B4F44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57B95425-BC08-4E6E-B6A4-457CE71B4F44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2397E04-8909-488D-9A8D-0594FEBBFD74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2397E04-8909-488D-9A8D-0594FEBBFD74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2397E04-8909-488D-9A8D-0594FEBBFD74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2397E04-8909-488D-9A8D-0594FEBBFD74}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4DE39D46-A226-4C12-BAEE-13310E112181} = {5CC7A807-1067-4048-8391-5114AD0577A0}
+		{57B95425-BC08-4E6E-B6A4-457CE71B4F44} = {5CC7A807-1067-4048-8391-5114AD0577A0}
+		{F2397E04-8909-488D-9A8D-0594FEBBFD74} = {5CC7A807-1067-4048-8391-5114AD0577A0}
+	EndGlobalSection
+EndGlobal
