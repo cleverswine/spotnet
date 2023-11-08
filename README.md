@@ -23,3 +23,11 @@ add auth secrets
 dotnet user-secrets set "Authentication:Spotify:ClientId" "<client-id>"
 dotnet user-secrets set "Authentication:Spotify:ClientSecret" "<client-secret>"
 ```
+
+## Get an intial token
+
+Run the ./src/web app and then navigate to http://localhost:5130/login
+
+## Do stuff
+
+After getting a token, run the ./src/cli app. The cli takes care of refreshing expired tokens.

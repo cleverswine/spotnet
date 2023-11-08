@@ -2,16 +2,17 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SpotNet.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(o => {
+    .AddCookie(o =>
+    {
         o.LoginPath = new PathString("/login");
-        // o.Cookie.SameSite = SameSiteMode.Strict;
-        // o.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     })
     .AddSpotify(opts =>
     {
@@ -31,7 +32,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "you will be redirected to /login").RequireAuthorization();
+app.MapGet("/", (HttpContext httpContext) => 
+    httpContext.User.Identity.IsAuthenticated ? Results.Redirect("/loggedIn") : Results.Ok())
+    .RequireAuthorization();
 
 app.MapGet("/login", async (HttpContext context) =>
     await context.ChallengeAsync("Spotify", new AuthenticationProperties { RedirectUri = "/loggedIn" })

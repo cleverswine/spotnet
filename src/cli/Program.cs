@@ -1,23 +1,27 @@
-﻿using SpotNet.Common;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SpotNet.Common;
 
 if (!args.Any()) throw new ArgumentException("please specify a Spotify username as an argument");
 
+var services = new ServiceCollection()
+    .AddSingleton<ITokenCache, TokenCache>();
+services.AddHttpClient<ISpotifyClient, SpotifyClient>((p, c) => c.BaseAddress = new Uri("https://api.spotify.com"));
+services.AddHttpClient<ITokenService, TokenService>((p, c) => c.BaseAddress = new Uri("https://accounts.spotify.com"));
+var serviceProvider = services.BuildServiceProvider();
+
 var user = args[0];
-var tokenCache = new TokenCache();
 var cancellationToken = new CancellationToken();
-var token = await tokenCache.Get(user, cancellationToken);
 
-using var c = new HttpClient { BaseAddress = new Uri("https://api.spotify.com") };
-c.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.AccessToken);
+var client = serviceProvider.GetRequiredService<ISpotifyClient>();
 
-var response = await c.GetAsync("/v1/me/player/devices");
-Console.WriteLine(await response.Content.ReadAsStringAsync());
+var devices = await client.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);
+foreach (var device in devices.Devices)
+{
+    Console.WriteLine($"{device.Name} ({device.Id}) - {device.IsActive}");
+}
 
-response = await c.GetAsync($"/v1/users/{token.Id}/playlists");
-Console.WriteLine(await response.Content.ReadAsStringAsync());
-
-// select playback device
-
-// toggle shufflr
-
-// select playlist to start
+var playlists = await client.Get<Paged<Playlist>>($"/v1/users/{user}/playlists", user, cancellationToken);
+foreach (var playlist in playlists.Items)
+{
+    Console.WriteLine($"{playlist.Name} ({playlist.Id}) - {playlist.Type}");
+}
