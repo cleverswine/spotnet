@@ -14,6 +14,11 @@ var cancellationToken = new CancellationToken();
 
 var client = serviceProvider.GetRequiredService<ISpotifyClient>();
 
+// var queue = "/v1/me/player/queue";
+// var currentlyPlaying = "/v1/me/player/currently-playing";
+// var json = await client.GetRaw(queue, user, cancellationToken);
+// Console.WriteLine(json);
+
 var devices = await client.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);
 foreach (var device in devices.Devices)
 {

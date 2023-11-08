@@ -2,6 +2,7 @@ public interface ISpotifyClient
 {
     Task<T> Get<T>(string url, string user, CancellationToken cancellationToken);
     Task<List<T>> Find<T>(string url, string user, CancellationToken cancellationToken);
+    Task<string> GetRaw(string url, string user, CancellationToken cancellationToken);
 }
 
 public class SpotifyClient : ISpotifyClient
@@ -27,5 +28,13 @@ public class SpotifyClient : ISpotifyClient
         await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
         var result = await _httpClient.GetAs<T>(url);
         return result;
+    }
+
+    public async Task<string> GetRaw(string url, string user, CancellationToken cancellationToken)
+    {
+        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
+        var result = await _httpClient.GetAsync(url);
+        result.EnsureSuccessStatusCode();
+        return await result.Content.ReadAsStringAsync();
     }
 }

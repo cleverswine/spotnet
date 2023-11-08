@@ -1,0 +1,102 @@
+{
+  "timestamp": 1699476187652,
+  "context": {
+    "external_urls": {
+      "spotify": "https://open.spotify.com/collection/tracks"
+    },
+    "href": "https://api.spotify.com/v1/me/tracks",
+    "type": "collection",
+    "uri": "spotify:user:cleverswine:collection"
+  },
+  "progress_ms": 105584,
+  "item": {
+    "album": {
+      "album_type": "album",
+      "artists": [
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/16AVsBqzmIZTNHd0eX8VbK"
+          },
+          "href": "https://api.spotify.com/v1/artists/16AVsBqzmIZTNHd0eX8VbK",
+          "id": "16AVsBqzmIZTNHd0eX8VbK",
+          "name": "The Birthday Massacre",
+          "type": "artist",
+          "uri": "spotify:artist:16AVsBqzmIZTNHd0eX8VbK"
+        }
+      ],
+      "available_markets": [
+        "AR",
+        "XK"
+      ],
+      "external_urls": {
+        "spotify": "https://open.spotify.com/album/4wK4A7mb7aEoykUajfWjZP"
+      },
+      "href": "https://api.spotify.com/v1/albums/4wK4A7mb7aEoykUajfWjZP",
+      "id": "4wK4A7mb7aEoykUajfWjZP",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b273084cd5b06d93c225bd10d0b3",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e02084cd5b06d93c225bd10d0b3",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d00004851084cd5b06d93c225bd10d0b3",
+          "width": 64
+        }
+      ],
+      "name": "Walking With Strangers",
+      "release_date": "2007-09-11",
+      "release_date_precision": "day",
+      "total_tracks": 12,
+      "type": "album",
+      "uri": "spotify:album:4wK4A7mb7aEoykUajfWjZP"
+    },
+    "artists": [
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/16AVsBqzmIZTNHd0eX8VbK"
+        },
+        "href": "https://api.spotify.com/v1/artists/16AVsBqzmIZTNHd0eX8VbK",
+        "id": "16AVsBqzmIZTNHd0eX8VbK",
+        "name": "The Birthday Massacre",
+        "type": "artist",
+        "uri": "spotify:artist:16AVsBqzmIZTNHd0eX8VbK"
+      }
+    ],
+    "available_markets": [
+      "AR",
+      "XK"
+    ],
+    "disc_number": 1,
+    "duration_ms": 221266,
+    "explicit": false,
+    "external_ids": {
+      "isrc": "US57M0750505"
+    },
+    "external_urls": {
+      "spotify": "https://open.spotify.com/track/25CRv7qnwyoa7kckF4HFb9"
+    },
+    "href": "https://api.spotify.com/v1/tracks/25CRv7qnwyoa7kckF4HFb9",
+    "id": "25CRv7qnwyoa7kckF4HFb9",
+    "is_local": false,
+    "name": "Red Stars",
+    "popularity": 51,
+    "preview_url": "https://p.scdn.co/mp3-preview/a2eb641764ccaa746ab8bbfc9694798b6d2f9ff0?cid=9ed5f864b8d94c97909afbad8fd22b08",
+    "track_number": 5,
+    "type": "track",
+    "uri": "spotify:track:25CRv7qnwyoa7kckF4HFb9"
+  },
+  "currently_playing_type": "track",
+  "actions": {
+    "disallows": {
+      "toggling_repeat_track": true
+    }
+  },
+  "is_playing": true
+}
