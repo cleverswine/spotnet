@@ -28,7 +28,7 @@ public class SpotifyPlayer : ISpotifyPlayer
         await AnsiConsole.Status()
             .StartAsync("finding playback devices...", async _ =>
             {
-                var devices = await _spotifyClient.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);                
+                devices = await _spotifyClient.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);                
             });
         return devices.Devices.FirstOrDefault(x => x.IsActive);
     }
@@ -66,7 +66,7 @@ public class SpotifyPlayer : ISpotifyPlayer
         await AnsiConsole.Status()
             .StartAsync("finding playback devices..", async _ =>
             {
-                var devices = await _spotifyClient.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);
+                devices = await _spotifyClient.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);
             });
         return AnsiConsole.Prompt(
             new SelectionPrompt<PlaybackDevice>()
@@ -98,7 +98,7 @@ public class SpotifyPlayer : ISpotifyPlayer
         await AnsiConsole.Status()
             .StartAsync("getting currently playing track...", async _ =>
             {
-                var track = await _spotifyClient.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
+                track = await _spotifyClient.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
             });
         if (track == null) return;
         AnsiConsole.MarkupLine("\n[bold]Currently Playing[/]");
