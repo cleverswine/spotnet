@@ -1,9 +1,5 @@
-using System.Text;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SpotNet.Common;
 
@@ -20,6 +16,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         opts.ClientSecret = builder.Configuration["Authentication:Spotify:ClientSecret"];
         opts.Scope.Add("user-library-read");
         opts.Scope.Add("user-read-playback-state");
+        opts.Scope.Add("user-modify-playback-state");
         opts.Scope.Add("user-read-email");
         opts.SaveTokens = true;
     });
