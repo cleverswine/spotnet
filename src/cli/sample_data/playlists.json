@@ -1,0 +1,456 @@
+{
+  "href": "https://api.spotify.com/v1/users/cleverswine/playlists?offset=0&limit=20",
+  "items": [
+    {
+      "collaborative": false,
+      "description": "",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/1ZqHxVOa6uJZk7Kw7fV2RB"
+      },
+      "href": "https://api.spotify.com/v1/playlists/1ZqHxVOa6uJZk7Kw7fV2RB",
+      "id": "1ZqHxVOa6uJZk7Kw7fV2RB",
+      "images": [
+        {
+          "height": null,
+          "url": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000bebb637085c24587203b1b55d889",
+          "width": null
+        }
+      ],
+      "name": "Best of Laibach",
+      "owner": {
+        "display_name": "Vladimir Wrenin",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/s7xlq1fx2cxaqsb4gwg2qidpt"
+        },
+        "href": "https://api.spotify.com/v1/users/s7xlq1fx2cxaqsb4gwg2qidpt",
+        "id": "s7xlq1fx2cxaqsb4gwg2qidpt",
+        "type": "user",
+        "uri": "spotify:user:s7xlq1fx2cxaqsb4gwg2qidpt"
+      },
+      "primary_color": null,
+      "public": false,
+      "snapshot_id": "MTI3LGYxMTQ5M2VjMzZlNWJlNDY4MmJkNDBlODRhM2JkZjZmMWNmYTAyYzE=",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/1ZqHxVOa6uJZk7Kw7fV2RB/tracks",
+        "total": 32
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:1ZqHxVOa6uJZk7Kw7fV2RB"
+    },
+    {
+      "collaborative": false,
+      "description": "all the songs.",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/4XCG1wXpuOtyAZVPGP2hpz"
+      },
+      "href": "https://api.spotify.com/v1/playlists/4XCG1wXpuOtyAZVPGP2hpz",
+      "id": "4XCG1wXpuOtyAZVPGP2hpz",
+      "images": [
+        {
+          "height": null,
+          "url": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000bebb3fe2c943a68d2bbcf2819a11",
+          "width": null
+        }
+      ],
+      "name": "Night Club: The Complete Discography",
+      "owner": {
+        "display_name": "Night Club",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/1242740137"
+        },
+        "href": "https://api.spotify.com/v1/users/1242740137",
+        "id": "1242740137",
+        "type": "user",
+        "uri": "spotify:user:1242740137"
+      },
+      "primary_color": null,
+      "public": false,
+      "snapshot_id": "MzIsNzQ3YTc0OWQzM2Q5YmVmYjVmZTM2YjJmOGFlNjc4ZDg1NGI5MDBlMg==",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/4XCG1wXpuOtyAZVPGP2hpz/tracks",
+        "total": 45
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:4XCG1wXpuOtyAZVPGP2hpz"
+    },
+    {
+      "collaborative": false,
+      "description": "",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/0b59jxvr4i95ddToaJMGGH"
+      },
+      "href": "https://api.spotify.com/v1/playlists/0b59jxvr4i95ddToaJMGGH",
+      "id": "0b59jxvr4i95ddToaJMGGH",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://mosaic.scdn.co/640/ab67616d0000b27318efc817016dcf652099d468ab67616d0000b27341b0eda696a1afd2bf738dceab67616d0000b2736eed07477acbf0d39e4008f5ab67616d0000b273a2d0479d7b5c7586e7bf9567",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://mosaic.scdn.co/300/ab67616d0000b27318efc817016dcf652099d468ab67616d0000b27341b0eda696a1afd2bf738dceab67616d0000b2736eed07477acbf0d39e4008f5ab67616d0000b273a2d0479d7b5c7586e7bf9567",
+          "width": 300
+        },
+        {
+          "height": 60,
+          "url": "https://mosaic.scdn.co/60/ab67616d0000b27318efc817016dcf652099d468ab67616d0000b27341b0eda696a1afd2bf738dceab67616d0000b2736eed07477acbf0d39e4008f5ab67616d0000b273a2d0479d7b5c7586e7bf9567",
+          "width": 60
+        }
+      ],
+      "name": "XFaves",
+      "owner": {
+        "display_name": "cleverswine",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/cleverswine"
+        },
+        "href": "https://api.spotify.com/v1/users/cleverswine",
+        "id": "cleverswine",
+        "type": "user",
+        "uri": "spotify:user:cleverswine"
+      },
+      "primary_color": null,
+      "public": false,
+      "snapshot_id": "NzQsMmFiYTU3NmViZDdjOTg4ZjY4MDY4NTI5NWRiZmQ0MmM0NzliOWU4Zg==",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/0b59jxvr4i95ddToaJMGGH/tracks",
+        "total": 11
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:0b59jxvr4i95ddToaJMGGH"
+    },
+    {
+      "collaborative": false,
+      "description": "",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/4kvpuq2Dq0UjoLPImfePzg"
+      },
+      "href": "https://api.spotify.com/v1/playlists/4kvpuq2Dq0UjoLPImfePzg",
+      "id": "4kvpuq2Dq0UjoLPImfePzg",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://mosaic.scdn.co/640/ab67616d0000b2730d8a62430369b60b0edbc2d1ab67616d0000b2732f6bc5234b003ddbef93974fab67616d0000b273a7f99ffd67e1fd0e6c83c3d4ab67616d0000b273abaa9f343da657e054c80440",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://mosaic.scdn.co/300/ab67616d0000b2730d8a62430369b60b0edbc2d1ab67616d0000b2732f6bc5234b003ddbef93974fab67616d0000b273a7f99ffd67e1fd0e6c83c3d4ab67616d0000b273abaa9f343da657e054c80440",
+          "width": 300
+        },
+        {
+          "height": 60,
+          "url": "https://mosaic.scdn.co/60/ab67616d0000b2730d8a62430369b60b0edbc2d1ab67616d0000b2732f6bc5234b003ddbef93974fab67616d0000b273a7f99ffd67e1fd0e6c83c3d4ab67616d0000b273abaa9f343da657e054c80440",
+          "width": 60
+        }
+      ],
+      "name": "Gene",
+      "owner": {
+        "display_name": "cleverswine",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/cleverswine"
+        },
+        "href": "https://api.spotify.com/v1/users/cleverswine",
+        "id": "cleverswine",
+        "type": "user",
+        "uri": "spotify:user:cleverswine"
+      },
+      "primary_color": null,
+      "public": false,
+      "snapshot_id": "MTgsYTM1Mjc0OGQyMTdjMmJmNzYwMmQyMTdhY2ZhMThmNWYxZWZiNjdlMg==",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/4kvpuq2Dq0UjoLPImfePzg/tracks",
+        "total": 86
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:4kvpuq2Dq0UjoLPImfePzg"
+    },
+    {
+      "collaborative": false,
+      "description": "The very best tracks from The Smiths including There Is A Light That Never Goes Out, Back To The Old House, This Night Has Opened My Eyes, Heaven Knows I'm Miserable Now,  This Charming Man and much more. Also featuring the songs from 'The Killer' film. ",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/22QDmwGa9VztPd97ZwYUYo"
+      },
+      "href": "https://api.spotify.com/v1/playlists/22QDmwGa9VztPd97ZwYUYo",
+      "id": "22QDmwGa9VztPd97ZwYUYo",
+      "images": [
+        {
+          "height": null,
+          "url": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000bebb258fb3496e9c5a9d330a3bb5",
+          "width": null
+        }
+      ],
+      "name": "The Smiths: Best",
+      "owner": {
+        "display_name": "The Smiths",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/thesmithsrhino"
+        },
+        "href": "https://api.spotify.com/v1/users/thesmithsrhino",
+        "id": "thesmithsrhino",
+        "type": "user",
+        "uri": "spotify:user:thesmithsrhino"
+      },
+      "primary_color": null,
+      "public": false,
+      "snapshot_id": "NDMsODVlOGFiNmZjM2U4MTQ5MGNiOWY2NjYwZTcyZWIxMzRmNWQyNDRjNw==",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/22QDmwGa9VztPd97ZwYUYo/tracks",
+        "total": 42
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:22QDmwGa9VztPd97ZwYUYo"
+    },
+    {
+      "collaborative": false,
+      "description": "&quot;California Son&quot; <a href=\"https://morrissey.lnk.to/sonWE\">out now</a>",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/3c2Z80Hz5Tl5wmfPAalrWo"
+      },
+      "href": "https://api.spotify.com/v1/playlists/3c2Z80Hz5Tl5wmfPAalrWo",
+      "id": "3c2Z80Hz5Tl5wmfPAalrWo",
+      "images": [
+        {
+          "height": null,
+          "url": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000bebb8afbd8bb9d8507f4f184f323",
+          "width": null
+        }
+      ],
+      "name": "Morrissey: The Discography",
+      "owner": {
+        "display_name": "Morrissey",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/morrisseyofficial"
+        },
+        "href": "https://api.spotify.com/v1/users/morrisseyofficial",
+        "id": "morrisseyofficial",
+        "type": "user",
+        "uri": "spotify:user:morrisseyofficial"
+      },
+      "primary_color": null,
+      "public": false,
+      "snapshot_id": "MTE0LGU2ODE2ZTBjNDk1OGNiYjhhNDk3N2E5YjhlNDg4ZDFmYzE3NTNlMmU=",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/3c2Z80Hz5Tl5wmfPAalrWo/tracks",
+        "total": 243
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:3c2Z80Hz5Tl5wmfPAalrWo"
+    },
+    {
+      "collaborative": false,
+      "description": "Front to Back, Deep Cuts and Singles. This is AVATAR",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/1Q2CgjjqyD7OzWdBBjDXZK"
+      },
+      "href": "https://api.spotify.com/v1/playlists/1Q2CgjjqyD7OzWdBBjDXZK",
+      "id": "1Q2CgjjqyD7OzWdBBjDXZK",
+      "images": [
+        {
+          "height": null,
+          "url": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000bebbdc48fea818a16d5a2273082e",
+          "width": null
+        }
+      ],
+      "name": "AVATAR: The Entire Collection",
+      "owner": {
+        "display_name": "Avatar Metal",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/qz16k9q2nbsmxdvvy5pfbrbtj"
+        },
+        "href": "https://api.spotify.com/v1/users/qz16k9q2nbsmxdvvy5pfbrbtj",
+        "id": "qz16k9q2nbsmxdvvy5pfbrbtj",
+        "type": "user",
+        "uri": "spotify:user:qz16k9q2nbsmxdvvy5pfbrbtj"
+      },
+      "primary_color": null,
+      "public": false,
+      "snapshot_id": "NzEsOTZjNzNiZTBiZjRlNTM3MGZkODVhM2NmZDUxZDJiNTI0MGIxYWE2Yw==",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/1Q2CgjjqyD7OzWdBBjDXZK/tracks",
+        "total": 111
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:1Q2CgjjqyD7OzWdBBjDXZK"
+    },
+    {
+      "collaborative": false,
+      "description": "",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/4BrGkAun3FBAzQLTeu6wJB"
+      },
+      "href": "https://api.spotify.com/v1/playlists/4BrGkAun3FBAzQLTeu6wJB",
+      "id": "4BrGkAun3FBAzQLTeu6wJB",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b2736e6862d20620338429d5448c",
+          "width": 640
+        }
+      ],
+      "name": "October Project",
+      "owner": {
+        "display_name": "cleverswine",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/cleverswine"
+        },
+        "href": "https://api.spotify.com/v1/users/cleverswine",
+        "id": "cleverswine",
+        "type": "user",
+        "uri": "spotify:user:cleverswine"
+      },
+      "primary_color": null,
+      "public": false,
+      "snapshot_id": "MyxhYzY3Nzg1YmE4MjFjNDkzYjQyMDJkMTc0NWFkOTBiYjdjZWU1MWM5",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/4BrGkAun3FBAzQLTeu6wJB/tracks",
+        "total": 23
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:4BrGkAun3FBAzQLTeu6wJB"
+    },
+    {
+      "collaborative": false,
+      "description": "",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/7o3itvhkWEnIX8sffJGZal"
+      },
+      "href": "https://api.spotify.com/v1/playlists/7o3itvhkWEnIX8sffJGZal",
+      "id": "7o3itvhkWEnIX8sffJGZal",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://mosaic.scdn.co/640/ab67616d0000b27310012cbe5047d28e4d7fceaeab67616d0000b2731e0fdc2906851e29d09320c3ab67616d0000b2734b75b4c598bbf7c852d3b3feab67616d0000b273fc44899bcbe64d27e5977512",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://mosaic.scdn.co/300/ab67616d0000b27310012cbe5047d28e4d7fceaeab67616d0000b2731e0fdc2906851e29d09320c3ab67616d0000b2734b75b4c598bbf7c852d3b3feab67616d0000b273fc44899bcbe64d27e5977512",
+          "width": 300
+        },
+        {
+          "height": 60,
+          "url": "https://mosaic.scdn.co/60/ab67616d0000b27310012cbe5047d28e4d7fceaeab67616d0000b2731e0fdc2906851e29d09320c3ab67616d0000b2734b75b4c598bbf7c852d3b3feab67616d0000b273fc44899bcbe64d27e5977512",
+          "width": 60
+        }
+      ],
+      "name": "Eighties",
+      "owner": {
+        "display_name": "cleverswine",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/cleverswine"
+        },
+        "href": "https://api.spotify.com/v1/users/cleverswine",
+        "id": "cleverswine",
+        "type": "user",
+        "uri": "spotify:user:cleverswine"
+      },
+      "primary_color": null,
+      "public": true,
+      "snapshot_id": "MTU3LDZkZGFmMmEwYTEyMDJjM2RmYzFiNjEwNzk0MzJkMDgzZmZhMjIxNTk=",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/7o3itvhkWEnIX8sffJGZal/tracks",
+        "total": 151
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:7o3itvhkWEnIX8sffJGZal"
+    },
+    {
+      "collaborative": false,
+      "description": "",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/2p5BEKHmf9b74RNNTOcdAe"
+      },
+      "href": "https://api.spotify.com/v1/playlists/2p5BEKHmf9b74RNNTOcdAe",
+      "id": "2p5BEKHmf9b74RNNTOcdAe",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://mosaic.scdn.co/640/ab67616d0000b273227e14b63f340d3f61c8f012ab67616d0000b27333c5e16084608319750d1627ab67616d0000b2738609a2ac949cf0bf0f183defab67616d0000b273fad1650e4ae427683c15ff96",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://mosaic.scdn.co/300/ab67616d0000b273227e14b63f340d3f61c8f012ab67616d0000b27333c5e16084608319750d1627ab67616d0000b2738609a2ac949cf0bf0f183defab67616d0000b273fad1650e4ae427683c15ff96",
+          "width": 300
+        },
+        {
+          "height": 60,
+          "url": "https://mosaic.scdn.co/60/ab67616d0000b273227e14b63f340d3f61c8f012ab67616d0000b27333c5e16084608319750d1627ab67616d0000b2738609a2ac949cf0bf0f183defab67616d0000b273fad1650e4ae427683c15ff96",
+          "width": 60
+        }
+      ],
+      "name": "Album Rock",
+      "owner": {
+        "display_name": "cleverswine",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/cleverswine"
+        },
+        "href": "https://api.spotify.com/v1/users/cleverswine",
+        "id": "cleverswine",
+        "type": "user",
+        "uri": "spotify:user:cleverswine"
+      },
+      "primary_color": null,
+      "public": true,
+      "snapshot_id": "MTQ4LGY4YTdlMTFjN2RjZjE4MzE1YzNmMjEwOGU1MmIyNjI1NzY5MTVmNTM=",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/2p5BEKHmf9b74RNNTOcdAe/tracks",
+        "total": 121
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:2p5BEKHmf9b74RNNTOcdAe"
+    },
+    {
+      "collaborative": false,
+      "description": "",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/6XJt7JPScGbW46G7ukJxK7"
+      },
+      "href": "https://api.spotify.com/v1/playlists/6XJt7JPScGbW46G7ukJxK7",
+      "id": "6XJt7JPScGbW46G7ukJxK7",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://mosaic.scdn.co/640/ab67616d0000b27318efc817016dcf652099d468ab67616d0000b273466942191e5f4e56d00a60d3ab67616d0000b2739432549227a02662897bc46eab67616d0000b2739d9317c5599c6df0b17962cd",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://mosaic.scdn.co/300/ab67616d0000b27318efc817016dcf652099d468ab67616d0000b273466942191e5f4e56d00a60d3ab67616d0000b2739432549227a02662897bc46eab67616d0000b2739d9317c5599c6df0b17962cd",
+          "width": 300
+        },
+        {
+          "height": 60,
+          "url": "https://mosaic.scdn.co/60/ab67616d0000b27318efc817016dcf652099d468ab67616d0000b273466942191e5f4e56d00a60d3ab67616d0000b2739432549227a02662897bc46eab67616d0000b2739d9317c5599c6df0b17962cd",
+          "width": 60
+        }
+      ],
+      "name": "Consider",
+      "owner": {
+        "display_name": "cleverswine",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/cleverswine"
+        },
+        "href": "https://api.spotify.com/v1/users/cleverswine",
+        "id": "cleverswine",
+        "type": "user",
+        "uri": "spotify:user:cleverswine"
+      },
+      "primary_color": null,
+      "public": true,
+      "snapshot_id": "MTQ3MCxhMDA3YzFhNmJmNjk1YTkyMGE3YTc5NDllZWQ2NmNmZmQxZmEyMjIz",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/6XJt7JPScGbW46G7ukJxK7/tracks",
+        "total": 25
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:6XJt7JPScGbW46G7ukJxK7"
+    }
+  ],
+  "limit": 20,
+  "next": null,
+  "offset": 0,
+  "previous": null,
+  "total": 11
+}

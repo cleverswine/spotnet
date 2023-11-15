@@ -1,6 +1,15 @@
 using System.Text.Json.Serialization;
 
 [Serializable]
+public class PlayCommand
+{
+    [JsonPropertyName("context_uri")]
+    public string ContextUri { get; set; }
+    [JsonPropertyName("position_ms")]
+    public int PositionMs { get; set; } = 0;
+}
+
+[Serializable]
 public class PlayerStatus
 {
     public PlaybackDevice Device { get; set; }
@@ -15,6 +24,14 @@ public class PlayerStatus
 public class PlaybackDevices
 {
     public PlaybackDevice[] Devices { get; set; }
+}
+
+[Serializable]
+public class PlayQueue
+{
+    [JsonPropertyName("currently_playing")]
+    public TrackItem CurrentlyPlaying { get; set; }
+    public TrackItem[] Queue { get; set; }
 }
 
 [Serializable]
@@ -42,11 +59,19 @@ public class Album
 {
     public string Name { get; set; }
     [JsonPropertyName("release_date")]
-    public DateTimeOffset ReleaseDate { get; set; }
+    public string ReleaseDate { get; set; }
     [JsonPropertyName("release_date_precision")]
     public string ReleaseDatePrecision { get; set; }
     public long TotalTracks { get; set; }
     public string Type { get; set; }
+    public DateTimeOffset ReleaseDateDate()
+    {
+        if (DateTimeOffset.TryParse(ReleaseDate, out var relDate))
+        {
+            return relDate;
+        }
+        return DateTimeOffset.UtcNow;
+    }
 }
 
 [Serializable]
@@ -86,4 +111,5 @@ public class Playlist
     public string Name { get; set; }
     public string Description { get; set; }
     public string Type { get; set; }
+    public string Uri { get; set; }
 }

@@ -1,7 +1,11 @@
+using System.Net.Http.Json;
+
 public interface ISpotifyClient
 {
     Task<T> Get<T>(string url, string user, CancellationToken cancellationToken);
     Task Post(string url, string user, CancellationToken cancellationToken);
+    Task Put(string url, string user, CancellationToken cancellationToken);
+    Task Put<T>(string url, T body, string user, CancellationToken cancellationToken);
     Task<List<T>> Find<T>(string url, string user, CancellationToken cancellationToken);
     Task<string> GetRaw(string url, string user, CancellationToken cancellationToken);
 }
@@ -38,11 +42,25 @@ public class SpotifyClient : ISpotifyClient
         result.EnsureSuccessStatusCode();
     }
 
+    public async Task Put(string url, string user, CancellationToken cancellationToken)
+    {
+        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
+        var result = await _httpClient.PutAsync(url, null);
+        result.EnsureSuccessStatusCode();
+    }
+
+    public async Task Put<T>(string url, T body, string user, CancellationToken cancellationToken)
+    {
+        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
+        var result = await _httpClient.PutAsync(url, JsonContent.Create(body));
+        result.EnsureSuccessStatusCode();
+    }
+
     public async Task<string> GetRaw(string url, string user, CancellationToken cancellationToken)
     {
         await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
         var result = await _httpClient.GetAsync(url);
-        result.EnsureSuccessStatusCode();
+        result.EnsureSuccessStatusCode();        
         return await result.Content.ReadAsStringAsync();
     }
 }

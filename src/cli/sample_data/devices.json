@@ -1,0 +1,10 @@
+{
+    "devices": [
+        {
+            "id": "ae985dc5eb61110a58403ca060edf50748bbee31",
+            "is_active": false,
+            "name": "raspotify (pi4)",
+            "type": "Speaker"
+        }
+    ]
+}

@@ -1,5 +1,9 @@
 using Spectre.Console;
 
+public interface ISpotifyUi {
+    Task<PlaybackDevice> GetActivePlaybackDevice(string user, CancellationToken cancellationToken);
+}
+
 public interface ISpotifyPlayer
 {
     Task<PlaybackDevice> GetActivePlaybackDevice(string user, CancellationToken cancellationToken);
@@ -28,7 +32,7 @@ public class SpotifyPlayer : ISpotifyPlayer
         await AnsiConsole.Status()
             .StartAsync("finding playback devices...", async _ =>
             {
-                devices = await _spotifyClient.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);                
+                devices = await _spotifyClient.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);
             });
         return devices.Devices.FirstOrDefault(x => x.IsActive);
     }
@@ -100,12 +104,16 @@ public class SpotifyPlayer : ISpotifyPlayer
             {
                 track = await _spotifyClient.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
             });
-        if (track == null) return;
+        if (track == null)
+        {
+            AnsiConsole.MarkupLine("\n[bold]Nothing Playing[/]");
+            return;
+        }
         AnsiConsole.MarkupLine("\n[bold]Currently Playing[/]");
         AnsiConsole.MarkupLineInterpolated($":person_with_skullcap: {track.Item.Artists.First().Name}");
         AnsiConsole.MarkupLineInterpolated($":musical_note: {track.Item.Name}");
         AnsiConsole.MarkupLineInterpolated($":eight_o_clock: {track.ProgressMs / 1000}s / {track.Item.DurationMs / 1000}s");
-        AnsiConsole.MarkupLineInterpolated($":flying_disc: {track.Item.Album.Name} - {track.Item.Album.ReleaseDate.ToString("yyyy")}");
+        AnsiConsole.MarkupLineInterpolated($":flying_disc: {track.Item.Album.Name} - {track.Item.Album.ReleaseDateDate().ToString("yyyy")}");
     }
 
     public Task ToggleShuffle(string user, PlaybackDevice playbackDevice, CancellationToken cancellationToken)
