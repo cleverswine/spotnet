@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 using SpotNet.Common;
 
 if (!args.Any()) throw new ArgumentException("please specify a Spotify username as an argument");
@@ -80,7 +81,7 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, C
 
     // play
     await client.Put($"/v1/me/player/play?device_id={selectedDevice.Id}", new PlayCommand { ContextUri = selectedPlaylist.Uri }, user, cancellationToken);
-    AnsiConsole.MarkupLine("playing");
+    AnsiConsole.MarkupLine("");
 }
 
 async Task ShowPlayer(IServiceProvider serviceProvider, string user, CancellationToken cancellationToken)
@@ -88,23 +89,45 @@ async Task ShowPlayer(IServiceProvider serviceProvider, string user, Cancellatio
     var client = serviceProvider.GetRequiredService<ISpotifyClient>();
 
     var table = new Table().Expand().BorderColor(Color.Grey);
-    table.AddColumn("x");
+    table.AddColumn(new TableColumn("").Centered());
     table.AddColumn("Artist");
     table.AddColumn("Song");
     table.AddColumn("Album");
     table.AddColumn("Year");
+    table.Columns[0].Width = 4;
 
     AnsiConsole.MarkupLine("Press [yellow]q[/] to exit, [green]r[/] to refresh");
 
     async Task Update()
     {
+        void addRow(string pct, TrackItem t)
+        {
+            // table.AddRow(new TableRow(new List<IRenderable> {
+            //         new Markup(pct == "" ? "" : pct),
+            //         new Markup(t.Artists[0].Name),
+            //         new Markup(t.Name),
+            //         new Markup(t.Album.Name),
+            //         new Markup(t.Album.ReleaseDateDate().Year.ToString())                
+            //     }
+            // ));
+            table.AddRow(
+                    new Markup(pct == "" ? "" : pct),
+                    new Markup(t.Artists[0].Name),
+                    new Markup(t.Name),
+                    new Markup(t.Album.Name),
+                    new Markup(t.Album.ReleaseDateDate().Year.ToString())
+                );
+        }
+
         table.Rows.Clear();
+
+        var t = await client.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
         var q = await client.Get<PlayQueue>("/v1/me/player/queue", user, cancellationToken);
-        var t = q.CurrentlyPlaying;
-        table.AddRow("x", t.Artists[0].Name, t.Name, t.Album.Name, t.Album.ReleaseDateDate().Year.ToString());
+        var pct = ((double)t.ProgressMs / (double)t.Item.DurationMs) * 100;
+        addRow($":musical_note: {pct:F0}%", t.Item);
         foreach (var item in q.Queue.Take(3))
         {
-            table.AddRow("", item.Artists[0].Name, item.Name, item.Album.Name, item.Album.ReleaseDateDate().Year.ToString());
+            addRow("", item);
         }
     }
 

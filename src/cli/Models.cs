@@ -17,6 +17,8 @@ public class PlayerStatus
     public bool ShuffleState { get; set; }
     [JsonPropertyName("is_playing")]
     public bool IsPlaying { get; set; }
+    [JsonPropertyName("progress_ms")]
+    public int ProgressMs { get; set; }    
     public TrackItem Item { get; set; }
 }
 
