@@ -12,7 +12,6 @@ var services = new ServiceCollection()
     .AddSingleton<ITokenCache, TokenCache>();
 services.AddHttpClient<ISpotifyClient, SpotifyClient>((p, c) => c.BaseAddress = new Uri("https://api.spotify.com"));
 services.AddHttpClient<ITokenService, TokenService>((p, c) => c.BaseAddress = new Uri("https://accounts.spotify.com"));
-services.AddScoped<ISpotifyPlayer, SpotifyPlayer>();
 using var serviceProvider = services.BuildServiceProvider();
 
 var user = args[0];
@@ -46,6 +45,7 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, b
     // get playback devices    
     var devices = await client.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);
     var allDevices = devices?.Devices?.ToList() ?? new List<PlaybackDevice>();
+    // hack to get inactive devices to choose from...
     var cachedDevices = (await "sample_data/devices.json".ReadAs<PlaybackDevices>(cancellationToken: cancellationToken)).Devices.ToList();
     foreach (var d in cachedDevices)
     {

@@ -40,4 +40,4 @@ The cli knows about the token storage directory and takes care of refreshing exp
 
 ### Screenshot!
 
-![Screenshot](./src/cli/sample_data/image.png)
+![Screenshot](image.png)
