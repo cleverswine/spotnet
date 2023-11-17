@@ -17,23 +17,30 @@ using var serviceProvider = services.BuildServiceProvider();
 
 var user = args[0];
 var cancellationToken = new CancellationToken();
-await GetOrStartNowPlaying(serviceProvider, user, cancellationToken);
-await ShowPlayer(serviceProvider, user, cancellationToken);
 
 // var client = serviceProvider.GetRequiredService<ISpotifyClient>();
-// var json = await client.GetRaw($"/v1/users/{user}/playlists", user, cancellationToken);
-// File.WriteAllText("sample_data/playlists.json", json);
-// Console.WriteLine(json);
+// var json = await client.GetRaw($"/v1/me/player/currently-playing", user, cancellationToken);
+// File.WriteAllText("sample_data/currently-playing.json", json);
 // return;
 
-async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, CancellationToken cancellationToken)
+if (args.Length > 1 && args[1] == "--fresh")
+    await GetOrStartNowPlaying(serviceProvider, user, true, cancellationToken);
+else await GetOrStartNowPlaying(serviceProvider, user, false, cancellationToken);
+
+AnsiConsole.WriteLine();
+await ShowPlayer(serviceProvider, user, cancellationToken);
+
+async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, bool force, CancellationToken cancellationToken)
 {
     var client = serviceProvider.GetRequiredService<ISpotifyClient>();
-    var currentlyPlaying = await client.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
-    if (currentlyPlaying != null)
+
+    if (!force)
     {
-        AnsiConsole.MarkupLineInterpolated($"Currently playing: [bold]{currentlyPlaying.Item.Name}[/]");
-        return;
+        var currentlyPlaying = await client.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
+        if (currentlyPlaying != null)
+        {
+            return;
+        }
     }
 
     // get playback devices    
@@ -87,47 +94,50 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, C
 async Task ShowPlayer(IServiceProvider serviceProvider, string user, CancellationToken cancellationToken)
 {
     var client = serviceProvider.GetRequiredService<ISpotifyClient>();
+    Track currentlyPlaying = null;
+    bool paused = false;
 
     var table = new Table().Expand().BorderColor(Color.Grey);
-    table.AddColumn(new TableColumn("").Centered());
+    table.AddColumn(new TableColumn(new Markup(":musical_note:")).Centered());
     table.AddColumn("Artist");
     table.AddColumn("Song");
     table.AddColumn("Album");
     table.AddColumn("Year");
     table.Columns[0].Width = 4;
 
-    AnsiConsole.MarkupLine("Press [yellow]q[/] to exit, [green]r[/] to refresh");
+    AnsiConsole.MarkupLine("([red]q[/]) exit | ([green]r[/]) refresh | ([blue]space[/]) play/pause | ([blue]n[/]) next track | ([blue]p[/]) previous track");
 
     async Task Update()
     {
-        void addRow(string pct, TrackItem t)
+        TableRow Row(string pct, TrackItem t)
         {
-            // table.AddRow(new TableRow(new List<IRenderable> {
-            //         new Markup(pct == "" ? "" : pct),
-            //         new Markup(t.Artists[0].Name),
-            //         new Markup(t.Name),
-            //         new Markup(t.Album.Name),
-            //         new Markup(t.Album.ReleaseDateDate().Year.ToString())                
-            //     }
-            // ));
-            table.AddRow(
+            return new TableRow(new List<IRenderable> {
                     new Markup(pct == "" ? "" : pct),
-                    new Markup(t.Artists[0].Name),
-                    new Markup(t.Name),
-                    new Markup(t.Album.Name),
-                    new Markup(t.Album.ReleaseDateDate().Year.ToString())
-                );
+                    new Text(t.Artists[0].Name),
+                    new Text(t.Name),
+                    new Text(t.Album.Name),
+                    new Text(t.Album.ReleaseDateDate().Year.ToString())
+                });
         }
 
-        table.Rows.Clear();
-
         var t = await client.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
-        var q = await client.Get<PlayQueue>("/v1/me/player/queue", user, cancellationToken);
-        var pct = ((double)t.ProgressMs / (double)t.Item.DurationMs) * 100;
-        addRow($":musical_note: {pct:F0}%", t.Item);
-        foreach (var item in q.Queue.Take(3))
+        var pct = $"{(((double)t.ProgressMs / (double)t.Item.DurationMs) * 100):F0}%" + (t.IsPlaying ? "" : " :pause_button:");       
+
+        if (currentlyPlaying != null && currentlyPlaying.Item.Id == t.Item.Id)
         {
-            addRow("", item);
+            // just update progress
+            table.UpdateCell(0, 0, new Markup(pct));
+        }
+        else
+        {
+            var q = await client.Get<PlayQueue>("/v1/me/player/queue", user, cancellationToken);
+            table.Rows.Clear();
+            table.AddRow(Row(pct, t.Item));
+            foreach (var item in q.Queue.Take(5))
+            {
+                table.AddRow(Row("", item));
+            }
+            currentlyPlaying = t;
         }
     }
 
@@ -140,75 +150,34 @@ async Task ShowPlayer(IServiceProvider serviceProvider, string user, Cancellatio
         {
             var k = Console.ReadKey(true);
             if (k.Key == ConsoleKey.Q) break;
-            if (k.Key == ConsoleKey.R)
+            switch (k.Key)
             {
-                await Update();
-                ctx.Refresh();
-                await Task.Delay(2000);
+                case ConsoleKey.R:
+                    await Update();
+                    ctx.Refresh();
+                    await Task.Delay(2000);
+                    break;
+                case ConsoleKey.N:
+                    await client.Post("/v1/me/player/next", user, cancellationToken);
+                    await Task.Delay(1000);
+                    await Update();
+                    ctx.Refresh();
+                    break;
+                case ConsoleKey.P:
+                    await client.Post("/v1/me/player/previous", user, cancellationToken);
+                    await Task.Delay(1000);
+                    await Update();
+                    ctx.Refresh();
+                    break;
+                case ConsoleKey.Spacebar:
+                    if (paused) await client.Put("/v1/me/player/play", user, cancellationToken);
+                    else await client.Put("/v1/me/player/pause", user, cancellationToken);
+                    paused = !paused;
+                    await Task.Delay(1000);
+                    await Update();
+                    ctx.Refresh();
+                    break;
             }
         }
     });
 }
-
-// var keybindings = new List<KbShortcut> {
-//     new KbShortcut{ Key = ConsoleKey.H, HelpText = "Help" },
-//     new KbShortcut{ Key = ConsoleKey.D, HelpText = "Select Playback Device",
-//         Do = async () => {
-//             var player = serviceProvider.GetRequiredService<ISpotifyPlayer>();
-//             playbackDevice = await player.SelectPlaybackDevice(user, cancellationToken);
-//         }},
-//     new KbShortcut{ Key = ConsoleKey.L, HelpText = "Select Playlist",
-//         Do = async () => {
-//             var player = serviceProvider.GetRequiredService<ISpotifyPlayer>();
-//             playList = await player.SelectPlaylist(user, cancellationToken);
-//         }},
-//     new KbShortcut{ Key = ConsoleKey.C, HelpText = "Show Currently Playing",
-//         Do = async () => {
-//             var player = serviceProvider.GetRequiredService<ISpotifyPlayer>();
-//             await player.ShowNowPlaying(user, playbackDevice, cancellationToken);
-//         }},
-//     new KbShortcut{ Key = ConsoleKey.N, HelpText = "Next Track",
-//         Do = async () => {
-//             var player = serviceProvider.GetRequiredService<ISpotifyPlayer>();
-//             await player.Next(user, playbackDevice, cancellationToken);
-//         }},
-//     new KbShortcut{ Key = ConsoleKey.Q, HelpText = "Quit" },
-// };
-
-// ShowHelp();
-
-// while (true)
-// {
-//     var k = Console.ReadKey(true);
-//     if (k.Key == ConsoleKey.Q)
-//     {
-//         break;
-//     };
-//     switch (k.Key)
-//     {
-//         case ConsoleKey.H:
-//         case ConsoleKey.Help:
-//             ShowHelp();
-//             break;
-//         default:
-//             var dof = keybindings.FirstOrDefault(x => x.Key == k.Key && x.Enabled());
-//             if (dof?.Do != null) await dof.Do();
-//             break;
-//     }
-// }
-
-// Console.WriteLine("\nGoodbye!\n");
-
-// void ShowHelp()
-// {
-//     var s = string.Join(" | ", keybindings.Where(x => x.Enabled()).Select(x => $"[bold blue][[{x.Key.ToString().ToLower()}]][/] {x.HelpText}"));
-//     AnsiConsole.MarkupLine(s);
-// }
-
-// class KbShortcut
-// {
-//     public ConsoleKey Key { get; set; }
-//     public string HelpText { get; set; }
-//     public Func<bool> Enabled { get; set; } = () => true;
-//     public Func<Task> Do { get; set; }
-// }

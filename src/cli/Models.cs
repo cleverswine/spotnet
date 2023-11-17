@@ -42,6 +42,8 @@ public class Track
     public TrackItem Item { get; set; }
     [JsonPropertyName("progress_ms")]
     public int ProgressMs { get; set; }
+    [JsonPropertyName("is_playing")]
+    public bool IsPlaying { get; set; }
 }
 
 [Serializable]

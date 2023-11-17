@@ -37,3 +37,7 @@ dotnet user-secrets set "Authentication:Spotify:ClientSecret" "<client-secret>"
 After getting a token, run the `./src/cli` app. 
 
 The cli knows about the token storage directory and takes care of refreshing expired tokens.
+
+### Screenshot!
+
+![Screenshot](sample_data/image.png)
