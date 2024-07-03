@@ -1,5 +1,7 @@
 using System.Text.Json;
 
+namespace SpotNet.Cli;
+
 public static class HttpClientExtensions
 {
     private static readonly JsonSerializerOptions DefaultJsonSerializerOptions =

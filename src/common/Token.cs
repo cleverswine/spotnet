@@ -5,8 +5,6 @@ namespace SpotNet.Common;
 [Serializable]
 public class Token
 {
-    public Token() { }
-
     [JsonPropertyName("id")]
     public string Id { get; set; }
 

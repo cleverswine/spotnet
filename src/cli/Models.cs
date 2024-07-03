@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 
+namespace SpotNet.Cli;
+
 [Serializable]
 public class PlayCommand
 {

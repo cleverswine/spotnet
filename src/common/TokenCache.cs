@@ -5,22 +5,16 @@ namespace SpotNet.Common;
 
 public interface ITokenCache
 {
-    Task AddClientCreds(string id, string secret, CancellationToken cancellationToken);
-    Task<string> GetClientCreds(CancellationToken cancellationToken);
+    Task<string> GetClientCredentials(CancellationToken cancellationToken);
     Task Add(Token token, CancellationToken cancellationToken);
     Task<Token> Get(string id, CancellationToken cancellationToken);
 }
 
 public class TokenCache : ITokenCache
 {
-    private Dictionary<string, Token> _tokens = new Dictionary<string, Token>();
+    private readonly Dictionary<string, Token> _tokens = new();
     private string _creds;
-    private string _configPath;
-
-    public TokenCache()
-    {
-        _configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "spotnet");
-    }
+    private readonly string _configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "spotnet");
 
     public async Task AddClientCreds(string id, string secret, CancellationToken cancellationToken)
     {
@@ -36,7 +30,7 @@ public class TokenCache : ITokenCache
         await File.WriteAllTextAsync($"{_configPath}/t_{token.Id}.json", JsonSerializer.Serialize(token), cancellationToken);
     }
 
-    public async Task<string> GetClientCreds(CancellationToken cancellationToken)
+    public async Task<string> GetClientCredentials(CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(_creds))
         {

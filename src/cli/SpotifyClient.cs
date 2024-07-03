@@ -1,5 +1,7 @@
 using System.Net.Http.Json;
 
+namespace SpotNet.Cli;
+
 public interface ISpotifyClient
 {
     Task<T> Get<T>(string url, string user, CancellationToken cancellationToken);
@@ -10,56 +12,47 @@ public interface ISpotifyClient
     Task<string> GetRaw(string url, string user, CancellationToken cancellationToken);
 }
 
-public class SpotifyClient : ISpotifyClient
+public class SpotifyClient(HttpClient httpClient, ITokenService tokenService) : ISpotifyClient
 {
-    private readonly HttpClient _httpClient;
-    private readonly ITokenService _tokenService;
-
-    public SpotifyClient(HttpClient httpClient, ITokenService tokenService)
-    {
-        _httpClient = httpClient;
-        _tokenService = tokenService;
-    }
-
     public async Task<List<T>> Find<T>(string url, string user, CancellationToken cancellationToken)
     {
-        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
-        var result = await _httpClient.GetAs<List<T>>(url);
+        await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
+        var result = await httpClient.GetAs<List<T>>(url);
         return result;
     }
 
     public async Task<T> Get<T>(string url, string user, CancellationToken cancellationToken)
     {
-        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
-        var result = await _httpClient.GetAs<T>(url);
+        await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
+        var result = await httpClient.GetAs<T>(url);
         return result;
     }
 
     public async Task Post(string url, string user, CancellationToken cancellationToken)
     {
-        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
-        var result = await _httpClient.PostAsync(url, null);
+        await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
+        var result = await httpClient.PostAsync(url, null);
         result.EnsureSuccessStatusCode();
     }
 
     public async Task Put(string url, string user, CancellationToken cancellationToken)
     {
-        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
-        var result = await _httpClient.PutAsync(url, null);
+        await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
+        var result = await httpClient.PutAsync(url, null);
         result.EnsureSuccessStatusCode();
     }
 
     public async Task Put<T>(string url, T body, string user, CancellationToken cancellationToken)
     {
-        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
-        var result = await _httpClient.PutAsync(url, JsonContent.Create(body));
+        await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
+        var result = await httpClient.PutAsync(url, JsonContent.Create(body));
         result.EnsureSuccessStatusCode();
     }
 
     public async Task<string> GetRaw(string url, string user, CancellationToken cancellationToken)
     {
-        await _tokenService.SetAuthorizationHeader(_httpClient, user, cancellationToken);
-        var result = await _httpClient.GetAsync(url);
+        await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
+        var result = await httpClient.GetAsync(url);
         result.EnsureSuccessStatusCode();        
         return await result.Content.ReadAsStringAsync();
     }

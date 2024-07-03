@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
@@ -12,8 +13,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     })
     .AddSpotify(opts =>
     {
-        opts.ClientId = builder.Configuration["Authentication:Spotify:ClientId"];
-        opts.ClientSecret = builder.Configuration["Authentication:Spotify:ClientSecret"];
+        opts.ClientId = builder.Configuration["Authentication:Spotify:ClientId"] ?? throw new ValidationException("Authentication:Spotify:ClientId config not found");
+        opts.ClientSecret = builder.Configuration["Authentication:Spotify:ClientSecret"] ?? throw new ValidationException("Authentication:Spotify:ClientSecret config not found");
         opts.Scope.Add("user-library-read");
         opts.Scope.Add("user-read-playback-state");
         opts.Scope.Add("user-modify-playback-state");
@@ -30,10 +31,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/", (HttpContext httpContext) => 
-    httpContext.User.Identity.IsAuthenticated ? Results.Redirect("/loggedIn") : Results.Ok())
+    httpContext.User.Identity?.IsAuthenticated ?? false ? Results.Redirect("/loggedIn") : Results.Ok())
     .RequireAuthorization();
 
-app.MapGet("/login", async (HttpContext context) =>
+app.MapGet("/login", async context =>
     await context.ChallengeAsync("Spotify", new AuthenticationProperties { RedirectUri = "/loggedIn" })
 );
 
@@ -43,9 +44,9 @@ app.MapGet("/loggedIn", async (HttpContext httpContext, IOptions<ClientCredentia
 
     var token = new Token
     {
-        Id = httpContext.User.Identity.Name,
+        Id = httpContext.User.Identity?.Name ?? "unknown",
         AccessToken = await httpContext.GetTokenAsync("access_token"),
-        ExpiresAt = DateTimeOffset.Parse(await httpContext.GetTokenAsync("expires_at")),
+        ExpiresAt = DateTimeOffset.Parse(await httpContext.GetTokenAsync("expires_at") ?? throw new ApplicationException("token expires_at not available")),
         RefreshToken = await httpContext.GetTokenAsync("refresh_token")
     };
 

@@ -476,4 +476,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-**/sample_data/
+# IntelliJ
+.idea

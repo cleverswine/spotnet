@@ -2,15 +2,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using SpotNet.Cli;
 using SpotNet.Common;
 
-if (!args.Any()) throw new ArgumentException("please specify a Spotify username as an argument: cli username [--fresh]");
+if (args.Length == 0) throw new ArgumentException("please specify a Spotify username as an argument: cli username [--fresh]");
 
 var services = new ServiceCollection()
     .AddSingleton<ITokenCache, TokenCache>();
-services.AddHttpClient<ISpotifyClient, SpotifyClient>((p, c) => c.BaseAddress = new Uri("https://api.spotify.com"));
-services.AddHttpClient<ITokenService, TokenService>((p, c) => c.BaseAddress = new Uri("https://accounts.spotify.com"));
-using var serviceProvider = services.BuildServiceProvider();
+services.AddHttpClient<ISpotifyClient, SpotifyClient>((_, c) => c.BaseAddress = new Uri("https://api.spotify.com"));
+services.AddHttpClient<ITokenService, TokenService>((_, c) => c.BaseAddress = new Uri("https://accounts.spotify.com"));
+await using var serviceProvider = services.BuildServiceProvider();
 
 var user = args[0];
 var cancellationToken = new CancellationToken();
@@ -22,13 +23,13 @@ else await GetOrStartNowPlaying(serviceProvider, user, false, cancellationToken)
 AnsiConsole.WriteLine();
 await ShowPlayer(serviceProvider, user, cancellationToken);
 
-async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, bool force, CancellationToken cancellationToken)
+async Task GetOrStartNowPlaying(IServiceProvider serviceProviderP, string userP, bool force, CancellationToken cancellationTokenP)
 {
-    var client = serviceProvider.GetRequiredService<ISpotifyClient>();
+    var client = serviceProviderP.GetRequiredService<ISpotifyClient>();
 
     if (!force)
     {
-        var currentlyPlaying = await client.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
+        var currentlyPlaying = await client.Get<Track>("/v1/me/player/currently-playing", userP, cancellationTokenP);
         if (currentlyPlaying != null)
         {
             return;
@@ -38,7 +39,7 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, b
     // get playback devices   
     var deviceCacheFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "spotnet", "devices.json");
     var cachedDevices = File.Exists(deviceCacheFile) ? JsonSerializer.Deserialize<List<PlaybackDevice>>(File.ReadAllText(deviceCacheFile)) : [];
-    var devices = await client.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);
+    var devices = await client.Get<PlaybackDevices>("/v1/me/player/devices", userP, cancellationTokenP);
     var allDevices = devices?.Devices?.ToList() ?? new List<PlaybackDevice>();
     foreach (var d in cachedDevices)
     {
@@ -61,7 +62,7 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, b
     AnsiConsole.MarkupLineInterpolated($"Selected playback device: [bold]{selectedDevice.Name}[/]");
 
     // select a playlist
-    var playlists = await client.Get<Paged<Playlist>>($"/v1/users/{user}/playlists", user, cancellationToken);
+    var playlists = await client.Get<Paged<Playlist>>($"/v1/users/{userP}/playlists", userP, cancellationTokenP);
     var selectedPlaylist = AnsiConsole.Prompt(
             new SelectionPrompt<Playlist>()
                 .Title("Select a playlist")
@@ -78,17 +79,17 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, b
             .PageSize(3)
             .AddChoices(new[] { true, false }));
 
-    await client.Put($"/v1/me/player/shuffle?state={selectedShuffleOption.ToString().ToLower()}&device_id={selectedDevice.Id}", user, cancellationToken);
+    await client.Put($"/v1/me/player/shuffle?state={selectedShuffleOption.ToString().ToLower()}&device_id={selectedDevice.Id}", userP, cancellationTokenP);
     AnsiConsole.MarkupLineInterpolated($"Set shuffle to: [bold]{selectedShuffleOption}[/]");
 
     // play
-    await client.Put($"/v1/me/player/play?device_id={selectedDevice.Id}", new PlayCommand { ContextUri = selectedPlaylist.Uri }, user, cancellationToken);
+    await client.Put($"/v1/me/player/play?device_id={selectedDevice.Id}", new PlayCommand { ContextUri = selectedPlaylist.Uri }, userP, cancellationTokenP);
     AnsiConsole.MarkupLine("");
 }
 
-async Task ShowPlayer(IServiceProvider serviceProvider, string user, CancellationToken cancellationToken)
+async Task ShowPlayer(IServiceProvider serviceProviderP, string userP, CancellationToken cancellationTokenP)
 {
-    var client = serviceProvider.GetRequiredService<ISpotifyClient>();
+    var client = serviceProviderP.GetRequiredService<ISpotifyClient>();
     Track currentlyPlaying = null;
     bool paused = false;
 
@@ -115,8 +116,8 @@ async Task ShowPlayer(IServiceProvider serviceProvider, string user, Cancellatio
                 });
         }
 
-        var t = await client.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
-        var pct = $"{(((double)t.ProgressMs / (double)t.Item.DurationMs) * 100):F0}%" + (t.IsPlaying ? "" : " :pause_button:");
+        var t = await client.Get<Track>("/v1/me/player/currently-playing", userP, cancellationTokenP);
+        var pct = $"{((t.ProgressMs / (double)t.Item.DurationMs) * 100):F0}%" + (t.IsPlaying ? "" : " :pause_button:");
 
         if (currentlyPlaying != null && currentlyPlaying.Item.Id == t.Item.Id)
         {
@@ -125,7 +126,7 @@ async Task ShowPlayer(IServiceProvider serviceProvider, string user, Cancellatio
         }
         else
         {
-            var q = await client.Get<PlayQueue>("/v1/me/player/queue", user, cancellationToken);
+            var q = await client.Get<PlayQueue>("/v1/me/player/queue", userP, cancellationTokenP);
             table.Rows.Clear();
             table.AddRow(Row(pct, t.Item));
             foreach (var item in q.Queue.Take(5))
@@ -153,20 +154,20 @@ async Task ShowPlayer(IServiceProvider serviceProvider, string user, Cancellatio
                     await Task.Delay(2000);
                     break;
                 case ConsoleKey.N:
-                    await client.Post("/v1/me/player/next", user, cancellationToken);
+                    await client.Post("/v1/me/player/next", userP, cancellationTokenP);
                     await Task.Delay(1000);
                     await Update();
                     ctx.Refresh();
                     break;
                 case ConsoleKey.P:
-                    await client.Post("/v1/me/player/previous", user, cancellationToken);
+                    await client.Post("/v1/me/player/previous", userP, cancellationTokenP);
                     await Task.Delay(1000);
                     await Update();
                     ctx.Refresh();
                     break;
                 case ConsoleKey.Spacebar:
-                    if (paused) await client.Put("/v1/me/player/play", user, cancellationToken);
-                    else await client.Put("/v1/me/player/pause", user, cancellationToken);
+                    if (paused) await client.Put("/v1/me/player/play", userP, cancellationTokenP);
+                    else await client.Put("/v1/me/player/pause", userP, cancellationTokenP);
                     paused = !paused;
                     await Task.Delay(1000);
                     await Update();
