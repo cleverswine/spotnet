@@ -30,7 +30,7 @@ public class TokenService(HttpClient client, ITokenCache tokenCache) : ITokenSer
             };
             
             var response = await client.SendAsync(req, cancellationToken);
-            var result = await response.GetAs<Token>();
+            var result = await response.GetAs<Token>(cancellationToken: cancellationToken);
             token.AccessToken = result.AccessToken;
             token.ExpiresIn = result.ExpiresIn;
             token.ExpiresAt = DateTime.UtcNow.AddSeconds(result.ExpiresIn - 30);

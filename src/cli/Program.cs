@@ -7,8 +7,7 @@ using SpotNet.Common;
 
 if (args.Length == 0) throw new ArgumentException("please specify a Spotify username as an argument: cli username [--fresh]");
 
-var services = new ServiceCollection()
-    .AddSingleton<ITokenCache, TokenCache>();
+var services = new ServiceCollection().AddSingleton<ITokenCache, TokenCache>();
 services.AddHttpClient<ISpotifyClient, SpotifyClient>((_, c) => c.BaseAddress = new Uri("https://api.spotify.com"));
 services.AddHttpClient<ITokenService, TokenService>((_, c) => c.BaseAddress = new Uri("https://accounts.spotify.com"));
 await using var serviceProvider = services.BuildServiceProvider();
@@ -16,12 +15,22 @@ await using var serviceProvider = services.BuildServiceProvider();
 var user = args[0];
 var cancellationToken = new CancellationToken();
 
-if (args.Length > 1 && args[1] == "--fresh")
-    await GetOrStartNowPlaying(serviceProvider, user, true, cancellationToken);
-else await GetOrStartNowPlaying(serviceProvider, user, false, cancellationToken);
+try
+{
+    if (args.Length > 1 && args[1] == "--fresh")
+        await GetOrStartNowPlaying(serviceProvider, user, true, cancellationToken);
+    else await GetOrStartNowPlaying(serviceProvider, user, false, cancellationToken);
 
-AnsiConsole.WriteLine();
-await ShowPlayer(serviceProvider, user, cancellationToken);
+    AnsiConsole.WriteLine();
+    await ShowPlayer(serviceProvider, user, cancellationToken);
+}
+catch (Exception ex)
+{
+    AnsiConsole.MarkupLineInterpolated($"[red]{ex.Message}[/]");
+    AnsiConsole.Reset();
+}
+
+return;
 
 async Task GetOrStartNowPlaying(IServiceProvider serviceProviderP, string userP, bool force, CancellationToken cancellationTokenP)
 {
@@ -43,32 +52,28 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProviderP, string userP,
     var allDevices = devices?.Devices?.ToList() ?? new List<PlaybackDevice>();
     foreach (var d in cachedDevices)
     {
-        if (!allDevices.Any(x => x.Id == d.Id)) allDevices.Add(d);
+        if (allDevices.All(x => x.Id != d.Id)) allDevices.Add(d);
     }
 
     File.WriteAllText(deviceCacheFile, JsonSerializer.Serialize(allDevices));
 
     // select playback device
-    var selectedDevice = allDevices.FirstOrDefault(x => x.IsActive);
-    if (selectedDevice == null)
-    {
-        selectedDevice = AnsiConsole.Prompt(
-            new SelectionPrompt<PlaybackDevice>()
-                .Title("Select a playback device")
-                .UseConverter(d => d.Name)
-                .PageSize(10)
-                .AddChoices(allDevices));
-    }
+    var selectedDevice = allDevices.FirstOrDefault(x => x.IsActive)
+                         ?? AnsiConsole.Prompt(new SelectionPrompt<PlaybackDevice>()
+                             .Title("Select a playback device")
+                             .UseConverter(d => d.Name)
+                             .PageSize(10)
+                             .AddChoices(allDevices));
     AnsiConsole.MarkupLineInterpolated($"Selected playback device: [bold]{selectedDevice.Name}[/]");
 
     // select a playlist
     var playlists = await client.Get<Paged<Playlist>>($"/v1/users/{userP}/playlists", userP, cancellationTokenP);
     var selectedPlaylist = AnsiConsole.Prompt(
-            new SelectionPrompt<Playlist>()
-                .Title("Select a playlist")
-                .UseConverter(d => d.Name)
-                .PageSize(12)
-                .AddChoices(playlists.Items));
+        new SelectionPrompt<Playlist>()
+            .Title("Select a playlist")
+            .UseConverter(d => d.Name)
+            .PageSize(12)
+            .AddChoices(playlists.Items));
     AnsiConsole.MarkupLineInterpolated($"Selected playlist: [bold]{selectedPlaylist.Name}[/]");
 
     // toggle shuffle
@@ -77,13 +82,13 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProviderP, string userP,
             .Title("Shuffle?")
             .UseConverter(d => d.ToString())
             .PageSize(3)
-            .AddChoices(new[] { true, false }));
+            .AddChoices(new[] {true, false}));
 
     await client.Put($"/v1/me/player/shuffle?state={selectedShuffleOption.ToString().ToLower()}&device_id={selectedDevice.Id}", userP, cancellationTokenP);
     AnsiConsole.MarkupLineInterpolated($"Set shuffle to: [bold]{selectedShuffleOption}[/]");
 
     // play
-    await client.Put($"/v1/me/player/play?device_id={selectedDevice.Id}", new PlayCommand { ContextUri = selectedPlaylist.Uri }, userP, cancellationTokenP);
+    await client.Put($"/v1/me/player/play?device_id={selectedDevice.Id}", new PlayCommand {ContextUri = selectedPlaylist.Uri}, userP, cancellationTokenP);
     AnsiConsole.MarkupLine("");
 }
 
@@ -91,7 +96,7 @@ async Task ShowPlayer(IServiceProvider serviceProviderP, string userP, Cancellat
 {
     var client = serviceProviderP.GetRequiredService<ISpotifyClient>();
     Track currentlyPlaying = null;
-    bool paused = false;
+    var paused = false;
 
     var table = new Table().Expand().BorderColor(Color.Grey);
     table.AddColumn(new TableColumn(new Markup(":musical_note:")).Centered());
@@ -107,17 +112,18 @@ async Task ShowPlayer(IServiceProvider serviceProviderP, string userP, Cancellat
     {
         TableRow Row(string pct, TrackItem t)
         {
-            return new TableRow(new List<IRenderable> {
-                    new Markup(pct == "" ? "" : pct),
-                    new Text(t.Artists[0].Name),
-                    new Text(t.Name),
-                    new Text(t.Album.Name),
-                    new Text(t.Album.ReleaseDateDate().Year.ToString())
-                });
+            return new TableRow(new List<IRenderable>
+            {
+                new Markup(pct == "" ? "" : pct),
+                new Text(t.Artists[0].Name),
+                new Text(t.Name),
+                new Text(t.Album.Name),
+                new Text(t.Album.ReleaseDateDate().Year.ToString())
+            });
         }
 
         var t = await client.Get<Track>("/v1/me/player/currently-playing", userP, cancellationTokenP);
-        var pct = $"{((t.ProgressMs / (double)t.Item.DurationMs) * 100):F0}%" + (t.IsPlaying ? "" : " :pause_button:");
+        var pct = $"{t.ProgressMs / (double) t.Item.DurationMs * 100:F0}%" + (t.IsPlaying ? "" : " :pause_button:");
 
         if (currentlyPlaying != null && currentlyPlaying.Item.Id == t.Item.Id)
         {
@@ -133,6 +139,7 @@ async Task ShowPlayer(IServiceProvider serviceProviderP, string userP, Cancellat
             {
                 table.AddRow(Row("", item));
             }
+
             currentlyPlaying = t;
         }
     }
