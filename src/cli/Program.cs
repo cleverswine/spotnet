@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using SpotNet.Common;
 
-if (!args.Any()) throw new ArgumentException("please specify a Spotify username as an argument");
+if (!args.Any()) throw new ArgumentException("please specify a Spotify username as an argument: cli username [--fresh]");
 
 var services = new ServiceCollection()
     .AddSingleton<ITokenCache, TokenCache>();
@@ -16,11 +14,6 @@ using var serviceProvider = services.BuildServiceProvider();
 
 var user = args[0];
 var cancellationToken = new CancellationToken();
-
-// var client = serviceProvider.GetRequiredService<ISpotifyClient>();
-// var json = await client.GetRaw($"/v1/me/player/currently-playing", user, cancellationToken);
-// File.WriteAllText("sample_data/currently-playing.json", json);
-// return;
 
 if (args.Length > 1 && args[1] == "--fresh")
     await GetOrStartNowPlaying(serviceProvider, user, true, cancellationToken);
@@ -42,18 +35,20 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, b
         }
     }
 
-    // get playback devices    
+    // get playback devices   
+    var deviceCacheFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "spotnet", "devices.json");
+    var cachedDevices = File.Exists(deviceCacheFile) ? JsonSerializer.Deserialize<List<PlaybackDevice>>(File.ReadAllText(deviceCacheFile)) : [];
     var devices = await client.Get<PlaybackDevices>("/v1/me/player/devices", user, cancellationToken);
     var allDevices = devices?.Devices?.ToList() ?? new List<PlaybackDevice>();
-    // hack to get inactive devices to choose from...
-    var cachedDevices = (await "sample_data/devices.json".ReadAs<PlaybackDevices>(cancellationToken: cancellationToken)).Devices.ToList();
     foreach (var d in cachedDevices)
     {
         if (!allDevices.Any(x => x.Id == d.Id)) allDevices.Add(d);
     }
 
+    File.WriteAllText(deviceCacheFile, JsonSerializer.Serialize(allDevices));
+
     // select playback device
-    var selectedDevice = cachedDevices.FirstOrDefault(x => x.IsActive);
+    var selectedDevice = allDevices.FirstOrDefault(x => x.IsActive);
     if (selectedDevice == null)
     {
         selectedDevice = AnsiConsole.Prompt(
@@ -61,7 +56,7 @@ async Task GetOrStartNowPlaying(IServiceProvider serviceProvider, string user, b
                 .Title("Select a playback device")
                 .UseConverter(d => d.Name)
                 .PageSize(10)
-                .AddChoices(cachedDevices));
+                .AddChoices(allDevices));
     }
     AnsiConsole.MarkupLineInterpolated($"Selected playback device: [bold]{selectedDevice.Name}[/]");
 
@@ -121,7 +116,7 @@ async Task ShowPlayer(IServiceProvider serviceProvider, string user, Cancellatio
         }
 
         var t = await client.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
-        var pct = $"{(((double)t.ProgressMs / (double)t.Item.DurationMs) * 100):F0}%" + (t.IsPlaying ? "" : " :pause_button:");       
+        var pct = $"{(((double)t.ProgressMs / (double)t.Item.DurationMs) * 100):F0}%" + (t.IsPlaying ? "" : " :pause_button:");
 
         if (currentlyPlaying != null && currentlyPlaying.Item.Id == t.Item.Id)
         {
