@@ -40,6 +40,7 @@ catch (Exception ex)
     AnsiConsole.Reset();
 }
 
+await Task.Delay(600);
 return;
 
 async Task GetOrStartNowPlaying(bool fresh)
@@ -98,6 +99,7 @@ async Task GetOrStartNowPlaying(bool fresh)
 
 async Task ShowPlayer()
 {
+    var lastUpdate = DateTime.UtcNow;
     Track currentlyPlaying = null;
     var paused = false;
 
@@ -117,9 +119,9 @@ async Task ShowPlayer()
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Delay(TimeSpan.FromSeconds(10));
-            if (!cancellationToken.IsCancellationRequested)
-                await ch.Writer.WriteAsync(ConsoleKey.R);
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+            if (cancellationToken.IsCancellationRequested || DateTime.UtcNow.Subtract(lastUpdate).TotalSeconds < 10) continue;
+            await ch.Writer.WriteAsync(ConsoleKey.R);
         }
     });
 
@@ -209,5 +211,7 @@ async Task ShowPlayer()
 
             currentlyPlaying = t;
         }
+        
+        lastUpdate = DateTime.UtcNow;
     }
 }
