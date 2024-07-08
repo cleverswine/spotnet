@@ -17,43 +17,43 @@ public class SpotifyClient(HttpClient httpClient, ITokenService tokenService) : 
     public async Task<List<T>> Find<T>(string url, string user, CancellationToken cancellationToken)
     {
         await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
-        var result = await httpClient.GetAs<List<T>>(url);
+        var result = await httpClient.GetAs<List<T>>(url, cancellationToken: cancellationToken);
         return result;
     }
 
     public async Task<T> Get<T>(string url, string user, CancellationToken cancellationToken)
     {
         await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
-        var result = await httpClient.GetAs<T>(url);
+        var result = await httpClient.GetAs<T>(url, cancellationToken: cancellationToken);
         return result;
     }
 
     public async Task Post(string url, string user, CancellationToken cancellationToken)
     {
         await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
-        var result = await httpClient.PostAsync(url, null);
+        var result = await httpClient.PostAsync(url, null, cancellationToken);
         result.EnsureSuccessStatusCode();
     }
 
     public async Task Put(string url, string user, CancellationToken cancellationToken)
     {
         await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
-        var result = await httpClient.PutAsync(url, null);
+        var result = await httpClient.PutAsync(url, null, cancellationToken);
         result.EnsureSuccessStatusCode();
     }
 
     public async Task Put<T>(string url, T body, string user, CancellationToken cancellationToken)
     {
         await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
-        var result = await httpClient.PutAsync(url, JsonContent.Create(body));
+        var result = await httpClient.PutAsync(url, JsonContent.Create(body), cancellationToken);
         result.EnsureSuccessStatusCode();
     }
 
     public async Task<string> GetRaw(string url, string user, CancellationToken cancellationToken)
     {
         await tokenService.SetAuthorizationHeader(httpClient, user, cancellationToken);
-        var result = await httpClient.GetAsync(url);
+        var result = await httpClient.GetAsync(url, cancellationToken);
         result.EnsureSuccessStatusCode();        
-        return await result.Content.ReadAsStringAsync();
+        return await result.Content.ReadAsStringAsync(cancellationToken);
     }
 }

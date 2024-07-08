@@ -3,6 +3,14 @@ using System.Text.Json.Serialization;
 namespace SpotNet.Cli;
 
 [Serializable]
+public class CurrentUser
+{
+    [JsonPropertyName("display_name")]
+    public string DisplayName { get; set; }
+    public string Email { get; set; }
+}
+
+[Serializable]
 public class PlayCommand
 {
     [JsonPropertyName("context_uri")]
@@ -58,6 +66,11 @@ public class TrackItem
     public string Id { get; set; }
     public string Name { get; set; }
     public string Type { get; set; }
+
+    [JsonIgnore]
+    public bool CurrentlyPlaying { get; set; }
+    [JsonIgnore]
+    public long? ProgressMs { get; set; }
 }
 
 [Serializable]
