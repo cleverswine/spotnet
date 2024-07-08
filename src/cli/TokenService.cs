@@ -15,7 +15,7 @@ public class TokenService(HttpClient client, ITokenCache tokenCache) : ITokenSer
         var token = await tokenCache.Get(user, cancellationToken);
         if (token.Expired)
         {
-            Console.WriteLine("token expired, getting a new one...");
+            // Console.WriteLine("token expired, getting a new one...");
 
             var basicCreds = await tokenCache.GetClientCredentials(cancellationToken);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicCreds);
