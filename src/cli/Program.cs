@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Threading.Channels;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Rendering;
@@ -14,7 +15,15 @@ await using var serviceProvider = services.BuildServiceProvider();
 
 var user = args[0];
 var client = serviceProvider.GetRequiredService<ISpotifyClient>();
-var cancellationToken = new CancellationToken();
+var cancellationTokenSource = new CancellationTokenSource();
+var cancellationToken = cancellationTokenSource.Token;
+
+// let everyone know that we are exiting
+Console.CancelKeyPress += (_, e) =>
+{
+    cancellationTokenSource.Cancel();
+    e.Cancel = true;
+};
 
 try
 {
@@ -101,18 +110,39 @@ async Task ShowPlayer()
     table.Columns[0].Width = 4;
 
     AnsiConsole.MarkupLine("([red]q[/]) exit | ([green]r[/]) refresh | ([blue]space[/]) play/pause | ([blue]n[/]) next track | ([blue]p[/]) previous track");
-    
+
+    var ch = Channel.CreateUnbounded<ConsoleKey>();
+
+    _ = Task.Run(async () =>
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(10));
+            await ch.Writer.WriteAsync(ConsoleKey.R);
+        }
+    });
+
+    _ = Task.Run(async () =>
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var k = Console.ReadKey(true);
+            await ch.Writer.WriteAsync(k.Key);
+        }
+    });
+
     await AnsiConsole.Live(table).StartAsync(async ctx =>
     {
         await Update();
         ctx.Refresh();
 
-        while (true)
+        await foreach (var k in ch.Reader.ReadAllAsync(cancellationToken))
         {
-            var k = Console.ReadKey(true);
-            if (k.Key == ConsoleKey.Q) break;
-            switch (k.Key)
+            switch (k)
             {
+                case ConsoleKey.Q:
+                    cancellationTokenSource.Cancel();
+                    break;
                 case ConsoleKey.R:
                     await Update();
                     ctx.Refresh();
@@ -141,7 +171,7 @@ async Task ShowPlayer()
             }
         }
     });
-    
+
     return;
 
     async Task Update()
