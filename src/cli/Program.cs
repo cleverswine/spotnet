@@ -118,7 +118,8 @@ async Task ShowPlayer()
         while (!cancellationToken.IsCancellationRequested)
         {
             await Task.Delay(TimeSpan.FromSeconds(10));
-            await ch.Writer.WriteAsync(ConsoleKey.R);
+            if (!cancellationToken.IsCancellationRequested)
+                await ch.Writer.WriteAsync(ConsoleKey.R);
         }
     });
 
