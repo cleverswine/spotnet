@@ -8,6 +8,7 @@ public interface ITokenCache
     Task<string> GetClientCredentials(CancellationToken cancellationToken);
     Task Add(Token token, CancellationToken cancellationToken);
     Task<Token> Get(string id, CancellationToken cancellationToken);
+    List<string> Users();
 }
 
 public class TokenCache : ITokenCache
@@ -48,5 +49,17 @@ public class TokenCache : ITokenCache
             _tokens[id] = token;
         }
         return _tokens[id];
+    }
+
+    public List<string> Users()
+    {
+        var results = new List<string>();
+        foreach (var item in Directory.EnumerateFiles(_configPath))
+        {
+            var f = new FileInfo(item);
+            if (f.Name.Contains("t_"))
+                results.Add(f.Name.Replace("t_", "").Replace(".json", ""));
+        }
+        return results;
     }
 }

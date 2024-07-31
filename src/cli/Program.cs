@@ -1,25 +1,32 @@
 ﻿using System.Text.Json;
 using System.Threading.Channels;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using SpotNet.Cli;
 using SpotNet.Common;
 
-if (args.Length == 0)
-    throw new ArgumentException("please specify a Spotify username as an argument: cli username [--fresh]");
+if (args.Contains("help"))
+{
+    Console.WriteLine("spotnet [--user <username>] [--fresh true]");
+    return;
+}
+
+var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
 
 var services = new ServiceCollection().AddSingleton<ITokenCache, TokenCache>();
 services.AddHttpClient<ISpotifyClient, SpotifyClient>((_, c) => c.BaseAddress = new Uri("https://api.spotify.com"));
 services.AddHttpClient<ITokenService, TokenService>((_, c) => c.BaseAddress = new Uri("https://accounts.spotify.com"));
 await using var serviceProvider = services.BuildServiceProvider();
 
-var user = args[0];
+// Globals
 var client = serviceProvider.GetRequiredService<ISpotifyClient>();
 var cancellationTokenSource = new CancellationTokenSource();
 var cancellationToken = cancellationTokenSource.Token;
+var user = configuration["user"];
 
-// let everyone know that we are exiting
+// let everyone know that we are exiting if ctrl-c is pressed
 Console.CancelKeyPress += (_, e) =>
 {
     cancellationTokenSource.Cancel();
@@ -28,7 +35,29 @@ Console.CancelKeyPress += (_, e) =>
 
 try
 {
-    await GetOrStartNowPlaying(args.Length > 1 && args[1] == "--fresh");
+    // get the Spotify user
+    var tokenCache = serviceProvider.GetRequiredService<ITokenCache>();
+    var cachedUsers = tokenCache.Users();
+
+    if (!string.IsNullOrWhiteSpace(user))
+    {
+        if (!cachedUsers.Contains(user))
+            throw new ArgumentException($"User {user} doesn't have a Spotify token cached. Please acquire a token with the web app before running this application");
+    }
+    else
+    {
+        if (cachedUsers.Count == 0)
+            throw new ArgumentException("No cached users found. Please acquire a token with the web app before running this application");
+
+        user = cachedUsers.Count == 1 ? cachedUsers.First() : AnsiConsole.Prompt(new SelectionPrompt<string>()
+                                 .Title("Select a user")
+                                 .UseConverter(d => d)
+                                 .PageSize(10)
+                                 .AddChoices(cachedUsers));
+    }
+
+    // Main loop
+    await GetOrStartNowPlaying(configuration["fresh"] != null);
     AnsiConsole.WriteLine();
     await ShowPlayer();
 }
@@ -38,7 +67,7 @@ catch (Exception ex)
     AnsiConsole.Reset();
 }
 
-await Task.Delay(600);
+await Task.Delay(500);
 return;
 
 async Task GetOrStartNowPlaying(bool fresh)
