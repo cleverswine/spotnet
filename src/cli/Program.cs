@@ -9,7 +9,7 @@ using SpotNet.Common;
 
 if (args.Contains("help"))
 {
-    Console.WriteLine("spotnet [--user <username>] [--fresh true]");
+    Console.WriteLine("spotnet [--user <username>] [--fresh true] [--items <number of queued songs to show>]");
     return;
 }
 
@@ -21,10 +21,12 @@ services.AddHttpClient<ITokenService, TokenService>((_, c) => c.BaseAddress = ne
 await using var serviceProvider = services.BuildServiceProvider();
 
 // Globals
+var user = configuration["user"];
+if(!int.TryParse(configuration["items"], out var queueLen)) queueLen = 10;
+if(queueLen > 20) queueLen = 20;
 var client = serviceProvider.GetRequiredService<ISpotifyClient>();
 var cancellationTokenSource = new CancellationTokenSource();
 var cancellationToken = cancellationTokenSource.Token;
-var user = configuration["user"];
 
 // let everyone know that we are exiting if ctrl-c is pressed
 Console.CancelKeyPress += (_, e) =>
@@ -235,7 +237,7 @@ async Task ShowPlayer()
             var q = await client.Get<PlayQueue>("/v1/me/player/queue", user, cancellationToken);
             table.Rows.Clear();
             table.AddRow(Row(pct, t.Item));
-            foreach (var item in q.Queue.Take(5))
+            foreach (var item in q.Queue.Take(queueLen-1))
             {
                 table.AddRow(Row("", item));
             }
