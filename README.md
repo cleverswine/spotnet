@@ -11,15 +11,10 @@ Some experimental Spotify stuff with .NET. (**Always a work in progress**)
 
 ### Set up Spotify client credentials
 
-enable secret storage for the web service by running the following from the `./src/web` directory
+Enable secret storage and add credentials for the web application by running the following from the `./src/web` directory
 
 ```bash
 dotnet user-secrets init
-```
-
-add auth secrets
-
-```bash
 dotnet user-secrets set "Authentication:Spotify:ClientId" "<client-id>"
 dotnet user-secrets set "Authentication:Spotify:ClientSecret" "<client-secret>"
 ```
