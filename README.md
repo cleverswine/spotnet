@@ -43,4 +43,4 @@ After that ^ you can run `spotnet <username>` from anywhere *(assuming $HOME/bin
 
 ### Screenshot!
 
-![Screenshot](image.png)
+![Screenshot](spotnet.png)
