@@ -6,7 +6,8 @@ using Spectre.Console.Rendering;
 using SpotNet.Cli;
 using SpotNet.Common;
 
-if (args.Length == 0) throw new ArgumentException("please specify a Spotify username as an argument: cli username [--fresh]");
+if (args.Length == 0)
+    throw new ArgumentException("please specify a Spotify username as an argument: cli username [--fresh]");
 
 var services = new ServiceCollection().AddSingleton<ITokenCache, TokenCache>();
 services.AddHttpClient<ISpotifyClient, SpotifyClient>((_, c) => c.BaseAddress = new Uri("https://api.spotify.com"));
@@ -27,10 +28,7 @@ Console.CancelKeyPress += (_, e) =>
 
 try
 {
-    if (args.Length > 1 && args[1] == "--fresh")
-        await GetOrStartNowPlaying(true);
-    else await GetOrStartNowPlaying(false);
-
+    await GetOrStartNowPlaying(args.Length > 1 && args[1] == "--fresh");
     AnsiConsole.WriteLine();
     await ShowPlayer();
 }
@@ -93,7 +91,7 @@ async Task GetOrStartNowPlaying(bool fresh)
     AnsiConsole.MarkupLineInterpolated($"Set shuffle to: [bold]{selectedShuffleOption}[/]");
 
     // play
-    await client.Put($"/v1/me/player/play?device_id={selectedDevice.Id}", new PlayCommand {ContextUri = selectedPlaylist.Uri}, user, cancellationToken);
+    await client.Put($"/v1/me/player/play?device_id={selectedDevice.Id}", new PlayCommand { ContextUri = selectedPlaylist.Uri }, user, cancellationToken);
     AnsiConsole.MarkupLine("");
 }
 
@@ -103,6 +101,7 @@ async Task ShowPlayer()
     Track currentlyPlaying = null;
     var paused = false;
 
+    // build playlist table
     var table = new Table().Expand().BorderColor(Color.Grey);
     table.AddColumn(new TableColumn(new Markup(":musical_note:")).Centered());
     table.AddColumn("Artist");
@@ -115,6 +114,7 @@ async Task ShowPlayer()
 
     var ch = Channel.CreateUnbounded<ConsoleKey>();
 
+    // refresh the data every n seconds
     _ = Task.Run(async () =>
     {
         while (!cancellationToken.IsCancellationRequested)
@@ -123,8 +123,10 @@ async Task ShowPlayer()
             if (cancellationToken.IsCancellationRequested || DateTime.UtcNow.Subtract(lastUpdate).TotalSeconds < 10) continue;
             await ch.Writer.WriteAsync(ConsoleKey.R);
         }
+        ch.Writer.TryComplete();
     });
 
+    // listen for KeyPress
     _ = Task.Run(async () =>
     {
         while (!cancellationToken.IsCancellationRequested)
@@ -132,14 +134,15 @@ async Task ShowPlayer()
             var k = Console.ReadKey(true);
             await ch.Writer.WriteAsync(k.Key);
         }
+        ch.Writer.TryComplete();
     });
 
+    // display the table and update it on KeyPress
     await AnsiConsole.Live(table).StartAsync(async ctx =>
     {
-        await Update();
-        ctx.Refresh();
+        await UpdateView(ctx);
 
-        await foreach (var k in ch.Reader.ReadAllAsync(cancellationToken))
+        await foreach (var k in ch.Reader.ReadAllAsync())
         {
             switch (k)
             {
@@ -147,29 +150,24 @@ async Task ShowPlayer()
                     cancellationTokenSource.Cancel();
                     break;
                 case ConsoleKey.R:
-                    await Update();
-                    ctx.Refresh();
-                    await Task.Delay(2000);
+                    await UpdateView(ctx);
                     break;
                 case ConsoleKey.N:
                     await client.Post("/v1/me/player/next", user, cancellationToken);
-                    await Task.Delay(1000);
-                    await Update();
-                    ctx.Refresh();
+                    await Task.Delay(1000); // wait for a second so that song has changed
+                    await UpdateView(ctx);
                     break;
                 case ConsoleKey.P:
                     await client.Post("/v1/me/player/previous", user, cancellationToken);
-                    await Task.Delay(1000);
-                    await Update();
-                    ctx.Refresh();
+                    await Task.Delay(1000); // wait for a second so that song has changed
+                    await UpdateView(ctx);
                     break;
                 case ConsoleKey.Spacebar:
                     if (paused) await client.Put("/v1/me/player/play", user, cancellationToken);
                     else await client.Put("/v1/me/player/pause", user, cancellationToken);
                     paused = !paused;
-                    await Task.Delay(1000);
-                    await Update();
-                    ctx.Refresh();
+                    await Task.Delay(1000); // wait for a second so that song has paused/unpaused
+                    await UpdateView(ctx);
                     break;
             }
         }
@@ -177,8 +175,11 @@ async Task ShowPlayer()
 
     return;
 
-    async Task Update()
+    async Task UpdateView(LiveDisplayContext ctx)
     {
+        // prevent hammering the ui/api...
+        if (DateTime.UtcNow.Subtract(lastUpdate).TotalSeconds <= 2) return;
+
         TableRow Row(string pct, TrackItem t)
         {
             return new TableRow(new List<IRenderable>
@@ -192,7 +193,7 @@ async Task ShowPlayer()
         }
 
         var t = await client.Get<Track>("/v1/me/player/currently-playing", user, cancellationToken);
-        var pct = $"{t.ProgressMs / (double) t.Item.DurationMs * 100:F0}%" + (t.IsPlaying ? "" : " :pause_button:");
+        var pct = $"{t.ProgressMs / (double)t.Item.DurationMs * 100:F0}%" + (t.IsPlaying ? "" : " :pause_button:");
 
         if (currentlyPlaying != null && currentlyPlaying.Item.Id == t.Item.Id)
         {
@@ -201,6 +202,7 @@ async Task ShowPlayer()
         }
         else
         {
+            // update all of the rows
             var q = await client.Get<PlayQueue>("/v1/me/player/queue", user, cancellationToken);
             table.Rows.Clear();
             table.AddRow(Row(pct, t.Item));
@@ -211,7 +213,8 @@ async Task ShowPlayer()
 
             currentlyPlaying = t;
         }
-        
+
+        ctx.Refresh();
         lastUpdate = DateTime.UtcNow;
     }
 }
