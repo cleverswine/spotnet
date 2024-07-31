@@ -97,7 +97,7 @@ async Task GetOrStartNowPlaying(bool fresh)
 
 async Task ShowPlayer()
 {
-    var lastUpdate = DateTime.UtcNow;
+    DateTime? lastUpdate = null;
     Track currentlyPlaying = null;
     var paused = false;
 
@@ -120,7 +120,7 @@ async Task ShowPlayer()
         while (!cancellationToken.IsCancellationRequested)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(500));
-            if (cancellationToken.IsCancellationRequested || DateTime.UtcNow.Subtract(lastUpdate).TotalSeconds < 10) continue;
+            if (cancellationToken.IsCancellationRequested || (lastUpdate.HasValue && DateTime.UtcNow.Subtract(lastUpdate.Value).TotalSeconds < 10)) continue;
             await ch.Writer.WriteAsync(ConsoleKey.R);
         }
         ch.Writer.TryComplete();
@@ -178,7 +178,7 @@ async Task ShowPlayer()
     async Task UpdateView(LiveDisplayContext ctx)
     {
         // prevent hammering the ui/api...
-        if (DateTime.UtcNow.Subtract(lastUpdate).TotalSeconds <= 2) return;
+        if (lastUpdate.HasValue && DateTime.UtcNow.Subtract(lastUpdate.Value).TotalSeconds <= 2) return;
 
         TableRow Row(string pct, TrackItem t)
         {
